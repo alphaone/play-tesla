@@ -1,7 +1,8 @@
 (ns play-tesla.core
   (:require [play-cljs.core :as p]
             [play-tesla.mario :as m]
-            [play-tesla.desk :as d]))
+            [play-tesla.desk :as d]
+            [play-tesla.coffee :as c]))
 
 (enable-console-print!)
 
@@ -23,6 +24,9 @@
    {:id :right :x 0 :y 0 :collision {:x 512 :y 0 :w 10 :h 512}}
    {:id :bottom :x 0 :y 0 :collision {:x 0 :y 512 :w 512 :h 10}}])
 
+(def coffee-station
+  {:id :coffee :x 340 :y 34 :collision {:x 340 :y 34 :w c/width :h c/height}})
+
 (defn draw-desk [{:keys [x y]}]
   [:div {:x x :y y :width d/width :height d/height}
    d/desk])
@@ -33,7 +37,7 @@
 (def main-screen
   (reify p/Screen
     (on-show [this]
-      (reset! state {:mario {:x 50 :y 250 :direction :right}}))
+      (reset! state {:mario {:x 50 :y 250 :direction :right :energy 100}}))
     (on-hide [this])
     (on-render [this]
       (p/render game
@@ -42,6 +46,8 @@
                   [[:fill {:color "lightblue"}
                     [:image {:name "office.png" :swidth 512 :sheight 512 :sx 0}]]
 
+                   [:div (:collision coffee-station) c/coffee]
+                   
                    (->> desks
                         (filter (partial desks-behind-mario (:y mario)))
                         (map draw-desk))
@@ -53,13 +59,15 @@
                         (filter (partial desks-infrontof-mario (:y mario)))
                         (map draw-desk))
 
-                   #_[:text {:value (select-keys (:mario @state) [:direction :velocity-x :x]) :x 10 :y 490 :size 16 :font "Georgia" :style :italic}]
+                   [:text {:value (select-keys (:mario @state) [:energy]) :x 10 :y 490 :size 16 :font "Georgia" :style :italic}]
                    ]))
       (reset! state
               (-> @state
                   (m/move game)
+                  (c/drink coffee-station)
                   (m/prevent-move desks)
                   (m/prevent-move walls)
+                  (m/prevent-move [coffee-station])
                   (m/animate)
                   )))))
 

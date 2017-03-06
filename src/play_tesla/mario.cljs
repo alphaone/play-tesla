@@ -36,11 +36,18 @@
       0
       velocity)))
 
+(defn decrease [old-energy]
+  (let [energy (- old-energy 0.05)]
+    (if (<= energy 0)
+      0
+      energy)))
+
 (defn move [{:keys [mario] :as state} game]
   (let [x (:x mario)
         y (:y mario)
         v-x (x-velocity game (:velocity-x mario))
-        v-y (y-velocity game (:velocity-y mario))]
+        v-y (y-velocity game (:velocity-y mario))
+        energy (:energy mario)]
     (assoc state
       :mario (merge mario
                     {:last-x     x
@@ -48,7 +55,8 @@
                      :x          (+ x v-x)
                      :y          (+ y v-y)
                      :velocity-x (decelerate v-x)
-                     :velocity-y (decelerate v-y)}))))
+                     :velocity-y (decelerate v-y)
+                     :energy     (decrease energy)}))))
 
 (defn prevent-move [{:keys [mario] :as state} desks]
   (let [x (:x mario)
