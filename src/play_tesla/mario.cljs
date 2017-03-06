@@ -77,11 +77,27 @@
         (< velocity-x 0) :left
         :else direction))
 
+(defn energy-color [energy]
+  (cond
+    (> energy 75) "#73ef0e"
+    (> energy 50) "#d2ef0e"
+    (> energy 25) "#efc20e"
+    :else "#ef1e0e"))
+
+(defn energy-chart [{:keys [energy]}]
+  (let [color (energy-color energy)]
+    [:fill {:color "gray"}
+     [:rect {:x 0 :y 0 :width 32 :height 6}]
+     [:stroke {:color color}
+      [:fill {:color color}
+       [:rect {:x 1 :y 1 :width (-> energy (/ 100) (* 30)) :height 4}]]]
+     ]))
+
 (defn animate [{:keys [mario] :as state}]
   (let [direction (get-direction mario)
         v-x (Math/abs (:velocity-x mario))
         v-y (Math/abs (:velocity-y mario))
-        moving? (or (> v-x 0.5) (> v-y 0.5))]
+        moving? (or (>= v-x 0.45) (>= v-y 0.45))]
     (-> state
         (assoc-in [:mario :current] (cond
                                       moving? (if (= direction :right) walk-right walk-left)

@@ -53,13 +53,15 @@
                         (map draw-desk))
 
                    [:div {:x (- (:x mario) (/ m/width 2)) :y (- (:y mario) m/height) :width m/width :height m/height}
-                    (:current mario)]
+                    (:current mario)
+                    [:div {:y 58 :height 6}
+                     (m/energy-chart mario)]]
 
                    (->> desks
                         (filter (partial desks-infrontof-mario (:y mario)))
                         (map draw-desk))
 
-                   [:text {:value (select-keys (:mario @state) [:energy]) :x 10 :y 490 :size 16 :font "Georgia" :style :italic}]
+                   #_[:text {:value (select-keys (:mario @state) [:energy]) :x 10 :y 490 :size 16 :font "Georgia" :style :italic}]
                    ]))
       (reset! state
               (-> @state
