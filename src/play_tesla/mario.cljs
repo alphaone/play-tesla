@@ -16,19 +16,17 @@
 (def walk-left-3 [:image {:name "mario.png" :swidth width :sheight height :sx 68 :flip-x true}])
 (def walk-left [:animation {:duration 150} stand-left walk-left-2 walk-left-3 walk-left-2])
 
-(def v-max 3)
-
-(defn x-velocity [game old-velocity]
-  (cond
-    (contains? (p/get-pressed-keys game) 37) (* -1 v-max)
-    (contains? (p/get-pressed-keys game) 39) v-max
-    :else old-velocity))
-
-(defn y-velocity [game old-velocity]
-  (cond
-    (contains? (p/get-pressed-keys game) 38) (* -1 v-max)
-    (contains? (p/get-pressed-keys game) 40) v-max
-    :else old-velocity))
+(defn velocity [game {:keys [velocity-x velocity-y energy]}]
+  (let [v-max (-> energy (/ 100) (* 3) (+ 0.5))
+        v-x (cond
+              (contains? (p/get-pressed-keys game) 37) (* -1 v-max)
+              (contains? (p/get-pressed-keys game) 39) v-max
+              :else velocity-x)
+        v-y (cond
+              (contains? (p/get-pressed-keys game) 38) (* -1 v-max)
+              (contains? (p/get-pressed-keys game) 40) v-max
+              :else velocity-y)]
+    [v-x v-y]))
 
 (defn decelerate [velocity]
   (let [velocity (* velocity 0.9)]
@@ -45,8 +43,7 @@
 (defn move [{:keys [mario] :as state} game]
   (let [x (:x mario)
         y (:y mario)
-        v-x (x-velocity game (:velocity-x mario))
-        v-y (y-velocity game (:velocity-y mario))
+        [v-x v-y] (velocity game mario)
         energy (:energy mario)]
     (assoc state
       :mario (merge mario
