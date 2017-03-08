@@ -17,12 +17,20 @@
    :right  {:x 0 :y 0 :collision {:x 512 :y 0 :w 10 :h 512}}
    :bottom {:x 0 :y 0 :collision {:x 0 :y 512 :w 512 :h 10}}})
 
+(def beers
+  {:beer1   {:x 350 :y 420 :collision {:x 350 :y 420 :w 44 :h 42}}
+   :beer2   {:x 400 :y 400 :collision {:x 400 :y 400 :w 44 :h 42}}})
+
 (def coffee-station
   {:x 340 :y 34 :collision {:x 340 :y 34 :w c/width :h c/height}})
 
 (defn draw-desk [[_ {:keys [x y] :as desk}]]
   [:div {:x x :y y :width d/width :height d/height}
    (d/draw-desk desk)])
+
+(defn draw-beer [[_ {:keys [x y]}]]
+  [:div {:x x :y y :width 44 :height 42}
+   [:image {:name "beer.png" :swidth 44 :sheight 42 :sx 0}]])
 
 (defn desks-behind-mario [mario-y [_ d]] (< (+ (:y d) d/height) mario-y))
 (defn desks-infrontof-mario [mario-y [_ d]] (> (+ (:y d) d/height) mario-y))
@@ -32,27 +40,27 @@
     (on-show [this]
       (reset! state {:mario {:x 50 :y 250 :direction :right :energy 100}
                      :desks {:desk-1 {:x          50 :y 120 :mode :fixed
-                                      :type       (rand-nth [:a :b])
+                                      :type       (rand-nth [:a :b :c])
                                       :activation {:x (+ 50 50) :y (+ 120 90) :w 10 :h 10}
                                       :collision  {:x 50 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
                              :desk-2 {:x          160 :y 120 :mode :fixed
-                                      :type       (rand-nth [:a :b])
+                                      :type       (rand-nth [:a :b :c])
                                       :activation {:x (+ 50 160) :y (+ 120 90) :w 10 :h 10}
                                       :collision  {:x 160 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
                              :desk-3 {:x          250 :y 220 :mode :fixed
-                                      :type       (rand-nth [:a :b])
+                                      :type       (rand-nth [:a :b :c])
                                       :activation {:x (+ 50 250) :y (+ 220 90) :w 10 :h 10}
                                       :collision  {:x 250 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
                              :desk-4 {:x          360 :y 220 :mode :fixed
-                                      :type       (rand-nth [:a :b])
+                                      :type       (rand-nth [:a :b :c])
                                       :activation {:x (+ 50 360) :y (+ 220 90) :w 10 :h 10}
                                       :collision  {:x 360 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
                              :desk-5 {:x          50 :y 320 :mode :fixed
-                                      :type       (rand-nth [:a :b])
+                                      :type       (rand-nth [:a :b :c])
                                       :activation {:x (+ 50 50) :y (+ 320 90) :w 10 :h 10}
                                       :collision  {:x 50 :y (+ 320 desk-collision-offset) :w d/width :h 30}}
                              :desk-6 {:x          160 :y 320 :mode :fixed
-                                      :type       (rand-nth [:a :b])
+                                      :type       (rand-nth [:a :b :c])
                                       :activation {:x (+ 50 160) :y (+ 320 90) :w 10 :h 10}
                                       :collision  {:x 160 :y (+ 320 desk-collision-offset) :w d/width :h 30}}}})
 
@@ -76,7 +84,8 @@
                    (->> desks
                         (filter (partial desks-behind-mario (:y mario)))
                         (map draw-desk))
-
+                   (map draw-beer beers)
+                   
                    [:div {:x (- (:x mario) (/ m/width 2)) :y (- (:y mario) m/height) :width m/width :height m/height}
                     (:current mario)
                     [:div {:y 58 :height 6}
@@ -85,6 +94,8 @@
                    (->> desks
                         (filter (partial desks-infrontof-mario (:y mario)))
                         (map draw-desk))
+
+                   
 
                    #_[:text {:value (select-keys (:mario @state) [:energy]) :x 10 :y 490 :size 16 :font "Georgia" :style :italic}]
                    ]))
@@ -95,6 +106,7 @@
                   (d/fix-broken-tests)
                   (m/prevent-move (:desks @state))
                   (m/prevent-move walls)
+                  (m/prevent-move beers)
                   (m/prevent-move {:coffee-station coffee-station})
                   (m/animate)
                   )))))

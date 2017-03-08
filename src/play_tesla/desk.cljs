@@ -5,7 +5,7 @@
 (def height 90)
 
 (defn draw-desk [{:keys [mode type]}]
-  (let [sx-people-sprite (if (= type :a) 0 80)
+  (let [sx-people-sprite (case type :a 0 :b 80 :c 160)
         x (if (= type :a) 55 10)
         sx-desk-sprite (if (= mode :broken) width 0)
         duration (if (= type :a) 500 600)]
