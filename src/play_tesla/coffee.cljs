@@ -8,7 +8,7 @@
 (def coffee [:image {:name "coffee.png" :swidth width :sheight height :sx 0}])
 
 (defn near? [{:keys [x y]} coffee-station]
-  (u/touching? x y m/width 20 [:coffee-station coffee-station]))
+  (u/touching? x y m/width 20 :collision [:coffee-station coffee-station]))
 
 (defn drink [{:keys [mario] :as state} coffee-station]
   (if (near? mario coffee-station)

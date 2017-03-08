@@ -12,10 +12,12 @@
 (defn fix-broken-tests [{:keys [mario desks] :as state}]
   (let [x (:x mario)
         y (:y mario)
-        colliding (fn [x y] (keep (partial u/touching? x y width 10) desks))
+        colliding (fn [x y] (keep (partial u/touching? x y width 10 :activation) desks))
         close-desks (colliding x y)]
     (if (seq close-desks)
-      (assoc-in state [:desks (first close-desks) :mode] :fixed)
+      (do
+        (prn "fixing" close-desks)
+        (assoc-in state [:desks (first close-desks) :mode] :fixed))
       state)))
 
 (defn fixed? [[_ desk]]

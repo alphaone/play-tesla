@@ -60,7 +60,7 @@
         y (:y mario)
         old-x (:last-x mario)
         old-y (:last-y mario)
-        colliding (fn [x y] (keep (partial u/touching? x y width 10) obstacles))]
+        colliding (fn [x y] (keep (partial u/touching? x y width 10 :collision) obstacles ))]
     (assoc state
       :mario (merge mario
                     (let [colliding-obstacles (colliding x old-y)]
