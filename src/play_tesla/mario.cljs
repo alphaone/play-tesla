@@ -55,12 +55,12 @@
                      :velocity-y (decelerate v-y)
                      :energy     (decrease energy)}))))
 
-(defn prevent-move [{:keys [mario] :as state} obstacle]
+(defn prevent-move [{:keys [mario] :as state} obstacles]
   (let [x (:x mario)
         y (:y mario)
         old-x (:last-x mario)
         old-y (:last-y mario)
-        colliding (fn [x y] (keep (partial u/touching? x y width 10) obstacle))]
+        colliding (fn [x y] (keep (partial u/touching? x y width 10) obstacles))]
     (assoc state
       :mario (merge mario
                     (let [colliding-obstacles (colliding x old-y)]

@@ -12,32 +12,36 @@
 (def desk-collision-offset 60)
 
 (def walls
-  [{:id :wall :x 0 :y 0 :collision {:x 0 :y 0 :w 512 :h 100}}
-   {:id :left :x 0 :y 0 :collision {:x 0 :y 0 :w -10 :h 512}}
-   {:id :right :x 0 :y 0 :collision {:x 512 :y 0 :w 10 :h 512}}
-   {:id :bottom :x 0 :y 0 :collision {:x 0 :y 512 :w 512 :h 10}}])
+  {:wall   {:x 0 :y 0 :collision {:x 0 :y 0 :w 512 :h 100}}
+   :left   {:x 0 :y 0 :collision {:x 0 :y 0 :w -10 :h 512}}
+   :right  {:x 0 :y 0 :collision {:x 512 :y 0 :w 10 :h 512}}
+   :bottom {:x 0 :y 0 :collision {:x 0 :y 512 :w 512 :h 10}}})
 
 (def coffee-station
-  {:id :coffee :x 340 :y 34 :collision {:x 340 :y 34 :w c/width :h c/height}})
+  {:x 340 :y 34 :collision {:x 340 :y 34 :w c/width :h c/height}})
 
-(defn draw-desk [{:keys [x y]}]
+(defn draw-desk [[_ {:keys [x y] :as desk}]]
   [:div {:x x :y y :width d/width :height d/height}
-   d/desk])
+   (d/draw-desk desk)])
 
-(defn desks-behind-mario [mario-y {:keys [y]}] (< (+ y d/height) mario-y))
-(defn desks-infrontof-mario [mario-y {:keys [y]}] (> (+ y d/height) mario-y))
+(defn desks-behind-mario [mario-y [_ d]] (< (+ (:y d) d/height) mario-y))
+(defn desks-infrontof-mario [mario-y [_ d]] (> (+ (:y d) d/height) mario-y))
+
+(def interval (atom nil))
 
 (def main-screen
   (reify p/Screen
     (on-show [this]
       (reset! state {:mario {:x 50 :y 250 :direction :right :energy 100}
-                     :desks [{:id :desk-1 :x 50 :y 120 :collision {:x 50 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
-                             {:id :desk-2 :x 160 :y 120 :collision {:x 160 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
-                             {:id :desk-3 :x 250 :y 220 :collision {:x 250 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
-                             {:id :desk-4 :x 360 :y 220 :collision {:x 360 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
-                             {:id :desk-5 :x 50 :y 320 :collision {:x 50 :y (+ 320 desk-collision-offset) :w d/width :h 30}}
-                             {:id :desk-6 :x 160 :y 320 :collision {:x 160 :y (+ 320 desk-collision-offset) :w d/width :h 30}}]}))
-    (on-hide [this])
+                     :desks {:desk-1 {:x 50 :y 120 :mode :fixed :collision {:x 50 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
+                             :desk-2 {:x 160 :y 120 :mode :fixed :collision {:x 160 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
+                             :desk-3 {:x 250 :y 220 :mode :fixed :collision {:x 250 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
+                             :desk-4 {:x 360 :y 220 :mode :fixed :collision {:x 360 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
+                             :desk-5 {:x 50 :y 320 :mode :fixed :collision {:x 50 :y (+ 320 desk-collision-offset) :w d/width :h 30}}
+                             :desk-6 {:x 160 :y 320 :mode :fixed :collision {:x 160 :y (+ 320 desk-collision-offset) :w d/width :h 30}}}})
+      (reset! interval (js/setInterval (fn [] (swap! state d/break-test)) 5000)))
+    (on-hide [this]
+      (js/clearInterval @interval))
     (on-render [this]
       (p/render game
 
@@ -47,7 +51,7 @@
                     [:image {:name "office.png" :swidth 512 :sheight 512 :sx 0}]]
 
                    [:div (:collision coffee-station) c/coffee]
-                   
+
                    (->> desks
                         (filter (partial desks-behind-mario (:y mario)))
                         (map draw-desk))
@@ -67,13 +71,15 @@
               (-> @state
                   (m/move game)
                   (c/drink coffee-station)
+                  (d/fix-broken-tests)
                   (m/prevent-move (:desks @state))
                   (m/prevent-move walls)
-                  (m/prevent-move [coffee-station])
+                  (m/prevent-move {:coffee-station coffee-station})
                   (m/animate)
                   )))))
 
 (doto game
   (p/start)
   (p/set-screen main-screen))
+
 
