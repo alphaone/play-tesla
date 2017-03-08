@@ -55,21 +55,21 @@
                      :velocity-y (decelerate v-y)
                      :energy     (decrease energy)}))))
 
-(defn prevent-move [{:keys [mario] :as state} desks]
+(defn prevent-move [{:keys [mario] :as state} obstacle]
   (let [x (:x mario)
         y (:y mario)
         old-x (:last-x mario)
         old-y (:last-y mario)
-        colliding (fn [x y] (keep (partial u/touching? x y width 10) desks))]
+        colliding (fn [x y] (keep (partial u/touching? x y width 10) obstacle))]
     (assoc state
       :mario (merge mario
-                    (let [obsticals (colliding x old-y)]
-                      (when (seq obsticals)
-                        (prn "touching x" obsticals)
+                    (let [colliding-obstacles (colliding x old-y)]
+                      (when (seq colliding-obstacles)
+                        (println "touching x" colliding-obstacles)
                         {:x old-x :velocity-x 0}))
-                    (let [obsticals (colliding old-x y)]
-                      (when (seq obsticals)
-                        (prn "touching y" obsticals)
+                    (let [colliding-obstacles (colliding old-x y)]
+                      (when (seq colliding-obstacles)
+                        (println "touching y" colliding-obstacles)
                         {:y old-y :velocity-y 0}))))))
 
 (defn get-direction [{:keys [velocity-x direction]}]

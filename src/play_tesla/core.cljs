@@ -9,14 +9,7 @@
 (defonce game (p/create-game 512 512))
 (defonce state (atom {}))
 
-(def collision-offset 60)
-(def desks
-  [{:id 1 :x 50 :y 120 :collision {:x 50 :y (+ 120 collision-offset) :w d/width :h 30}}
-   {:id 2 :x 160 :y 120 :collision {:x 160 :y (+ 120 collision-offset) :w d/width :h 30}}
-   {:id 3 :x 250 :y 220 :collision {:x 250 :y (+ 220 collision-offset) :w d/width :h 30}}
-   {:id 4 :x 360 :y 220 :collision {:x 360 :y (+ 220 collision-offset) :w d/width :h 30}}
-   {:id 5 :x 50 :y 320 :collision {:x 50 :y (+ 320 collision-offset) :w d/width :h 30}}
-   {:id 6 :x 160 :y 320 :collision {:x 160 :y (+ 320 collision-offset) :w d/width :h 30}}])
+(def desk-collision-offset 60)
 
 (def walls
   [{:id :wall :x 0 :y 0 :collision {:x 0 :y 0 :w 512 :h 100}}
@@ -37,12 +30,19 @@
 (def main-screen
   (reify p/Screen
     (on-show [this]
-      (reset! state {:mario {:x 50 :y 250 :direction :right :energy 100}}))
+      (reset! state {:mario {:x 50 :y 250 :direction :right :energy 100}
+                     :desks [{:id :desk-1 :x 50 :y 120 :collision {:x 50 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
+                             {:id :desk-2 :x 160 :y 120 :collision {:x 160 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
+                             {:id :desk-3 :x 250 :y 220 :collision {:x 250 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
+                             {:id :desk-4 :x 360 :y 220 :collision {:x 360 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
+                             {:id :desk-5 :x 50 :y 320 :collision {:x 50 :y (+ 320 desk-collision-offset) :w d/width :h 30}}
+                             {:id :desk-6 :x 160 :y 320 :collision {:x 160 :y (+ 320 desk-collision-offset) :w d/width :h 30}}]}))
     (on-hide [this])
     (on-render [this]
       (p/render game
 
-                (let [mario (:mario @state)]
+                (let [mario (:mario @state)
+                      desks (:desks @state)]
                   [[:fill {:color "lightblue"}
                     [:image {:name "office.png" :swidth 512 :sheight 512 :sx 0}]]
 
@@ -67,7 +67,7 @@
               (-> @state
                   (m/move game)
                   (c/drink coffee-station)
-                  (m/prevent-move desks)
+                  (m/prevent-move (:desks @state))
                   (m/prevent-move walls)
                   (m/prevent-move [coffee-station])
                   (m/animate)

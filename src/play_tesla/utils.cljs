@@ -13,8 +13,8 @@
            (between? y1-end y2-start y2-end)
            (between? y2-end y1-start y1-end))))
 
-(defn touching? [mario-x mario-y width height object]
-  (let [collision (:collision object) 
+(defn touching? [mario-x mario-y width height obstacle]
+  (let [collision (:collision obstacle) 
         x-start (- mario-x (/ width 2))
         x-end (+ mario-x (/ width 2))
         y-start (- mario-y height)
@@ -25,4 +25,4 @@
         o-x-end (+ o-x-start (:w collision))
         o-y-end (+ o-y-start (:h collision))]
     (when (over-lapping? x-start x-end y-start y-end o-x-start o-x-end o-y-start o-y-end)
-      (:id object))))
+      (:id obstacle))))
