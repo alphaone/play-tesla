@@ -6,8 +6,14 @@
 
 (defn draw-desk [{:keys [mode]}]
   (if (= mode :broken)
-    [:image {:name "desk.png" :swidth width :sheight height :sx width}]
-    [:image {:name "desk.png" :swidth width :sheight height :sx 0}]))
+    [:div {}
+     [:image {:name "desk.png" :swidth width :sheight height :sx width}]
+     [:div {:x 50 :y 15 :width 40 :height 80}
+      [:image {:name "people.png" :swidth 40 :sheight 80 :sx 0}]]]
+    [:div {}
+     [:image {:name "desk.png" :swidth width :sheight height :sx 0}]
+     [:div {:x 50 :y 15 :width 40 :height 80}
+      [:image {:name "people.png" :swidth 40 :sheight 80 :sx 0}]]]))
 
 (defn fix-broken-tests [{:keys [mario desks] :as state}]
   (let [x (:x mario)
