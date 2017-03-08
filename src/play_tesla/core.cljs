@@ -66,7 +66,7 @@
 
       (swap! state update-in [:timeoutid]
              (fn [_] (js/setInterval
-                       (fn [] (swap! state d/break-test)) 5000))))
+                       (fn [] (swap! state d/break-test)) 4000))))
 
     (on-hide [this]
       (println "clear interval ..." (:timeoutid @state))

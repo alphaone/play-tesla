@@ -7,10 +7,12 @@
 (defn draw-desk [{:keys [mode type]}]
   (let [sx-people-sprite (case type :a 0 :b 80 :c 160)
         x (if (= type :a) 55 10)
-        sx-desk-sprite (if (= mode :broken) width 0)
-        duration (if (= type :a) 500 600)]
+        sx-desk-sprite (if (= mode :broken) (* 2 width) 0)
+        duration (case type :a 400 :b 500 :c 600)]
     [:div {}
-     [:image {:name "desk.png" :swidth width :sheight height :sx sx-desk-sprite}]
+     [:animation {:duration duration}
+      [:image {:name "desk.png" :swidth width :sheight height :sx sx-desk-sprite}]
+      [:image {:name "desk.png" :swidth width :sheight height :sx (+ width sx-desk-sprite)}]]
      [:div {:x x :y 15 :width 40 :height 80}
       [:animation {:duration duration}
        [:image {:name "people.png" :swidth 40 :sheight 80 :sx sx-people-sprite}]
