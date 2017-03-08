@@ -32,28 +32,34 @@
     (on-show [this]
       (reset! state {:mario {:x 50 :y 250 :direction :right :energy 100}
                      :desks {:desk-1 {:x          50 :y 120 :mode :fixed
+                                      :type       (rand-nth [:a :b])
                                       :activation {:x (+ 50 50) :y (+ 120 90) :w 10 :h 10}
                                       :collision  {:x 50 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
                              :desk-2 {:x          160 :y 120 :mode :fixed
+                                      :type       (rand-nth [:a :b])
                                       :activation {:x (+ 50 160) :y (+ 120 90) :w 10 :h 10}
                                       :collision  {:x 160 :y (+ 120 desk-collision-offset) :w d/width :h 30}}
                              :desk-3 {:x          250 :y 220 :mode :fixed
+                                      :type       (rand-nth [:a :b])
                                       :activation {:x (+ 50 250) :y (+ 220 90) :w 10 :h 10}
                                       :collision  {:x 250 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
                              :desk-4 {:x          360 :y 220 :mode :fixed
+                                      :type       (rand-nth [:a :b])
                                       :activation {:x (+ 50 360) :y (+ 220 90) :w 10 :h 10}
                                       :collision  {:x 360 :y (+ 220 desk-collision-offset) :w d/width :h 30}}
                              :desk-5 {:x          50 :y 320 :mode :fixed
+                                      :type       (rand-nth [:a :b])
                                       :activation {:x (+ 50 50) :y (+ 320 90) :w 10 :h 10}
                                       :collision  {:x 50 :y (+ 320 desk-collision-offset) :w d/width :h 30}}
                              :desk-6 {:x          160 :y 320 :mode :fixed
+                                      :type       (rand-nth [:a :b])
                                       :activation {:x (+ 50 160) :y (+ 320 90) :w 10 :h 10}
                                       :collision  {:x 160 :y (+ 320 desk-collision-offset) :w d/width :h 30}}}})
-      
+
       (swap! state update-in [:timeoutid]
              (fn [_] (js/setInterval
                        (fn [] (swap! state d/break-test)) 5000))))
-    
+
     (on-hide [this]
       (println "clear interval ..." (:timeoutid @state))
       (js/clearInterval (:timeoutid @state)))

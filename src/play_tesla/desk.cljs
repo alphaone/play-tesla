@@ -4,16 +4,14 @@
 (def width 108)
 (def height 90)
 
-(defn draw-desk [{:keys [mode]}]
-  (if (= mode :broken)
+(defn draw-desk [{:keys [mode type]}]
+  (let [sx-people-sprite (if (= type :a) 0 40)
+        x (if (= type :a) 50 10)
+        sx-desk-sprite (if (= mode :broken) width 0)]
     [:div {}
-     [:image {:name "desk.png" :swidth width :sheight height :sx width}]
-     [:div {:x 50 :y 15 :width 40 :height 80}
-      [:image {:name "people.png" :swidth 40 :sheight 80 :sx 0}]]]
-    [:div {}
-     [:image {:name "desk.png" :swidth width :sheight height :sx 0}]
-     [:div {:x 50 :y 15 :width 40 :height 80}
-      [:image {:name "people.png" :swidth 40 :sheight 80 :sx 0}]]]))
+     [:image {:name "desk.png" :swidth width :sheight height :sx sx-desk-sprite}]
+     [:div {:x x :y 15 :width 40 :height 80}
+      [:image {:name "people.png" :swidth 40 :sheight 80 :sx sx-people-sprite}]]]))
 
 (defn fix-broken-tests [{:keys [mario desks] :as state}]
   (let [x (:x mario)
